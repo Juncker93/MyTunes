@@ -1,5 +1,6 @@
 module com.example.mytunes {
     requires javafx.controls;
+    requires javafx.media;
     requires javafx.fxml;
     requires static lombok;
     requires jaudiotagger;

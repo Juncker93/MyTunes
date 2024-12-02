@@ -1,10 +1,15 @@
 package com.example.mytunes;
 
 import javafx.scene.image.Image;
+import lombok.Getter;
+import lombok.Setter;
 
 public class Playlist
 {
+    @Setter @Getter
     private String title;
+    @Setter
+    private PlaylistItemController playListController;
     private int duration;
     private Image imagePlaylist;
 
@@ -17,5 +22,11 @@ public class Playlist
     public Playlist()
     {
 
+    }
+
+    public void setTitle(String title)
+    {
+        this.title = title;
+        playListController.setPlaylistTitle(title);
     }
 }

@@ -22,16 +22,16 @@ public class Song
     private String albumTitle;
 
     @Getter @Setter
-    private Image albumCover;
+    private byte[] albumCoverByte;
 
-    public Song(String title, String artist, String album, String songYear, int duration, Image albumCover)
+    public Song(String title, String artist, String album, String songYear, int duration, byte[] albumCover)
     {
         this.songTitle = title;
         this.songArtist = artist;
         this.songYear = songYear;
         this.songDuration = duration;
         this.albumTitle = album;
-        this.albumCover = albumCover;
+        this.albumCoverByte = albumCover;
     }
 
     @Override

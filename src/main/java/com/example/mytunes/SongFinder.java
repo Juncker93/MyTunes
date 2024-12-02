@@ -15,6 +15,7 @@ import org.jaudiotagger.tag.images.Artwork;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,24 +39,23 @@ public class SongFinder
             String songYear = tag.getFirst(FieldKey.YEAR);
             String songGenre = tag.getFirst(FieldKey.GENRE);
 
-            Image albumCover = null;
-
-            try{
+            byte[] albumCover = null;
+            try {
                 Artwork artwork = tag.getFirstArtwork();
-                if (artwork != null){
-                    byte[] imageData = artwork.getBinaryData();
-                    try (InputStream inputStream = new ByteArrayInputStream(imageData)){
-                        albumCover = new Image(inputStream);
-                    }
+                if (artwork != null) {
+                    albumCover = artwork.getBinaryData();
                 } else {
-                    albumCover = new Image("src/main/resources/images/MusicRecord.png");
-
+                    File fi = new File("src/main/resources/images/MusicRecord.png");
+                    albumCover = Files.readAllBytes(fi.toPath());
                 }
-            } catch (Exception e){
-                logger.warning("Cant load album cover:" + e.getMessage());
+            } catch (Exception e) {
+                logger.warning("Failed to load album art: " + e.getMessage());
             }
 
-            return new Song(songTitle, songArtist, songAlbum, songYear, trackLength, albumCover);
+            Song newSong = new Song(songTitle, songArtist, songAlbum, songYear, trackLength, albumCover);
+
+            newSong.setSongFile(audioFile);
+            return newSong;
 
         } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException e){
             logger.warning("Cant read audio file: " + e.getMessage());

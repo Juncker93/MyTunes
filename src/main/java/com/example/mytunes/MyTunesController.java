@@ -13,10 +13,12 @@ public class MyTunesController
 {
     @FXML
     private VBox playlistVbox;
-    Library library = new Library();
-
     @FXML
     private AnchorPane centerView;
+
+    Library library = new Library();
+
+    Playlist selectedPlaylist;
 
     @FXML
     private void addPlaylist()
@@ -28,10 +30,17 @@ public class MyTunesController
             playlistVbox.getChildren().add(playlist);
             PlaylistItemController controller = loader.getController();
             controller.setMyTunesController(this);
-            controller.setPlaylist(library.newPlaylist());
+            Playlist playList = library.newPlaylist();
+            controller.setPlaylist(playList);
+            playList.setPlayListController(controller);
         } catch (IOException e) {
         e.printStackTrace();
         }
+    }
+
+    public void setPlaylistTitle(String title)
+    {
+        setPlaylistTitle.setText(title);
     }
 
     public void onPlaylistSelected(Playlist playlist)
@@ -48,11 +57,20 @@ public class MyTunesController
 
             PlaylistViewController controller = loader.getController(); // Get PlaylistViewController
             controller.setPlaylist(playlist); // Set the selected playlist in the PlaylistViewController
-            controller.setLibrary(library); // Optionally, pass the user library to the playlist view
+            controller.setLibrary(library);// Optionally, pass the user library to the playlist view
+            controller.myTunesController(this);
+            controller.initializeCustom();
+
+            selectedPlaylist = playlist;
 
             centerView.getChildren().add(newView); // Set the new view in the center of the BorderPane
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setupUserDocuments()
+    {
+        String
     }
 }
