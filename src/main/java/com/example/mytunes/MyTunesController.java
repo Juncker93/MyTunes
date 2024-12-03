@@ -50,7 +50,8 @@ public class MyTunesController
         }
     }
 
-    private void switchToPlaylist(Playlist playlist) {
+    private void switchToPlaylist(Playlist playlist)
+    {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("playlist-view.fxml"));
             BorderPane newView = loader.load();
@@ -71,6 +72,6 @@ public class MyTunesController
 
     private void setupUserDocuments()
     {
-        String
+
     }
 }
