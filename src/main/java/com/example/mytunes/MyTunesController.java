@@ -40,7 +40,7 @@ public class MyTunesController
 
     public void setPlaylistTitle(String title)
     {
-        setPlaylistTitle.setText(title);
+        //setPlaylistTitle.setText(title);
     }
 
     public void onPlaylistSelected(Playlist playlist)
