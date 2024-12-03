@@ -4,6 +4,8 @@ import javafx.scene.image.Image;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.ByteArrayInputStream;
+
 public class Song
 {
     @Getter @Setter
@@ -22,6 +24,9 @@ public class Song
     private String albumTitle;
 
     @Getter @Setter
+    public transient Image albumCover;
+
+    @Getter @Setter
     private byte[] albumCoverByte;
 
     public Song(String title, String artist, String album, String songYear, int duration, byte[] albumCover)
@@ -32,6 +37,26 @@ public class Song
         this.songDuration = duration;
         this.albumTitle = album;
         this.albumCoverByte = albumCover;
+        setAlbumCoverBytes(albumCover);
+        getSongDurationFormatted = getSongDurationFormatted();
+    }
+
+    public Image getAlbumCover()
+    {
+        return new Image(new ByteArrayInputStream(albumCoverByte));
+    }
+
+    public void setAlbumCoverBytes(byte[] albumCoverBytes)
+    {
+        albumCover = new Image(new ByteArrayInputStream(albumCoverBytes));
+    }
+
+    public String getSongDurationFormatted()
+    {
+        int seconds = songDuration / 60;
+        int minutes = songDuration % 60;
+
+        return String.format("%02d:%02d", minutes, seconds);
     }
 
     @Override
