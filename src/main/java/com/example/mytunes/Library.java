@@ -18,7 +18,7 @@ public class Library
         songs.add(song);
     }
 
-    public void CreateNewAlbum(Song song)
+    public void createNewAlbum(Song song)
     {
         String albumTitle = song.getAlbumTitle();
         String albumArtist = song.getSongArtist();

@@ -27,4 +27,9 @@ public class PlaylistItemController
             myTunesController.onPlaylistSelected(playlist);
         }
     }
+
+    public void updatePlaylistTitleUI()
+    {
+        setPlaylistTitle.setText(playlist.getTitle());
+    }
 }

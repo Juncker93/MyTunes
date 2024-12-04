@@ -1,11 +1,9 @@
 module com.example.mytunes {
-    requires javafx.controls;
-    requires javafx.media;
     requires javafx.fxml;
     requires static lombok;
     requires jaudiotagger;
+    requires org.controlsfx.controls;
     requires java.logging;
-    requires javafx.graphics;
 
 
     opens com.example.mytunes to javafx.fxml;

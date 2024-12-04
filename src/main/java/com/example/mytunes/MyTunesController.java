@@ -6,7 +6,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
+import javafx.stage.FileChooser;
+import java.util.logging.Logger;
+import java.io.File;
 import java.io.IOException;
 
 public class MyTunesController
@@ -18,7 +20,11 @@ public class MyTunesController
 
     Library library = new Library();
 
+    Logger logger = Logger.getLogger(MyTunesController.class.getName());
+
     Playlist selectedPlaylist;
+
+
 
     @FXML
     private void addPlaylist()
@@ -59,7 +65,7 @@ public class MyTunesController
             PlaylistViewController controller = loader.getController(); // Get PlaylistViewController
             controller.setPlaylist(playlist); // Set the selected playlist in the PlaylistViewController
             controller.setLibrary(library);// Optionally, pass the user library to the playlist view
-            controller.myTunesController(this);
+            controller.setMyTunesController(this);
             controller.initializeCustom();
 
             selectedPlaylist = playlist;
@@ -74,4 +80,46 @@ public class MyTunesController
     {
 
     }
+
+    @FXML
+    private void importSong() {
+
+        // create a File chooser
+        FileChooser fil_chooser = new FileChooser();
+
+        // Make a filter of which file types the user can import
+        fil_chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Audio Files", "*.FLAC", "*.MP3", "*.WAV"));
+
+        // Show to file chooser dialog window
+        File selectedFile = fil_chooser.showOpenDialog(centerView.getScene().getWindow());
+
+        // Did the user select a file?
+        if (selectedFile != null) {
+            // Create a new songParser object
+            SongFinder songFinder = new SongFinder();
+
+            // Grab all the metadata from the song file
+            Song newSong = songFinder.findSong(selectedFile);
+
+            // Add the song to the users library
+            library.addSong(newSong);
+
+            // Log
+            logger.info("Added song: " + library.getSongs().getLast());
+
+            // If this album doesn't exist in the users library, create it here
+            if (!library.doesAlbumExist(newSong.getAlbumTitle())) {
+                // If the album doesn't exist, create a new one
+                library.createNewAlbum(newSong);
+
+            } else if (library.doesAlbumExist(newSong.getAlbumTitle())) {
+                // If the imported song comes from the same album, then add it to the album
+                Album album = library.findAlbum(newSong.getAlbumTitle());
+                album.addSongToAlbum(newSong);
+            }
+        }
+    }
+
+
+
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 
 public class Song
 {
@@ -29,6 +30,9 @@ public class Song
     @Getter @Setter
     private byte[] albumCoverByte;
 
+    @Getter @Setter
+    private File songFile;
+
     public Song(String title, String artist, String album, String songYear, int duration, byte[] albumCover)
     {
         this.songTitle = title;
@@ -38,7 +42,6 @@ public class Song
         this.albumTitle = album;
         this.albumCoverByte = albumCover;
         setAlbumCoverBytes(albumCover);
-        getSongDurationFormatted = getSongDurationFormatted();
     }
 
     public Image getAlbumCover()
@@ -53,8 +56,8 @@ public class Song
 
     public String getSongDurationFormatted()
     {
-        int seconds = songDuration / 60;
         int minutes = songDuration % 60;
+        int seconds = songDuration / 60;
 
         return String.format("%02d:%02d", minutes, seconds);
     }

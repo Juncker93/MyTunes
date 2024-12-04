@@ -24,9 +24,5 @@ public class Playlist
 
     }
 
-    public void setTitle(String title)
-    {
-        this.title = title;
-        playListController.setPlaylistTitle(title);
-    }
+
 }

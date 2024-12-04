@@ -58,7 +58,7 @@ public class SongFinder
             return newSong;
 
         } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException e){
-            logger.warning("Cant read audio file: " + e.getMessage());
+            logger.warning("Can't read audio file: " + e.getMessage());
         } catch (Exception e){
             logger.log(Level.SEVERE, "Critical error occurred" + e.getMessage());
         }
