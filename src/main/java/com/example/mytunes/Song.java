@@ -56,10 +56,11 @@ public class Song
 
     public String getSongDurationFormatted()
     {
-        int minutes = songDuration % 60;
-        int seconds = songDuration / 60;
+        int minutes = songDuration / 60; // Get full minutes
+        int seconds = songDuration % 60; // Get remaining seconds
 
-        return String.format("%02d:%02d", minutes, seconds);
+        // Format seconds to always be 2 digits
+        return String.format("%d:%02d", minutes, seconds);
     }
 
     @Override

@@ -1,11 +1,16 @@
 package com.example.mytunes;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import lombok.Getter;
 import lombok.Setter;
 import org.controlsfx.control.SearchableComboBox;
+
+import java.awt.*;
 
 public class PlaylistViewController
 {
@@ -17,6 +22,24 @@ public class PlaylistViewController
 
     @FXML
     private TableView<Song> tableviewPlaylist;
+
+    @FXML
+    private TableColumn<Song, Image> songCoverColumn;
+
+    @FXML
+    private TableColumn<Song, Integer> songNumberColumn;
+
+    @FXML
+    private TableColumn<Song, Integer> songTimeColumn;
+
+    @FXML
+    private TableColumn<Song, String> songTitleColumn;
+
+    @FXML
+    private TableColumn<Song, String> albumColumn;
+
+    @FXML
+    private TableColumn<Song, String> artistColumn;
 
     @FXML
     private SearchableComboBox<Song> searchableComboBox;
@@ -39,6 +62,7 @@ public class PlaylistViewController
 
     public void initializeCustom()
     {
+        setupCells();
         setChangePlaylistName();
         changePlaylistName.setText(playlist.getTitle());
         addSongsToSearchBox();
@@ -60,7 +84,27 @@ public class PlaylistViewController
     private void addSongsToTableview()
     {
         tableviewPlaylist.getItems().clear();
-        tableviewPlaylist.getItems().addAll(playlist.getSongs());
+
+        for(Song song : playlist.getSongs()){
+            tableviewPlaylist.getItems().add(song);
+        }
+
+        tableviewPlaylist.refresh();
+    }
+
+    private void setupCells() {
+        albumColumn.setCellValueFactory(new PropertyValueFactory<>("albumTitle"));
+
+        // Set up other columns as needed
+        songTimeColumn.setCellValueFactory(new PropertyValueFactory<>("songDurationFormatted"));
+        songTitleColumn.setCellValueFactory(new PropertyValueFactory<>("songTitle"));
+        artistColumn.setCellValueFactory(new PropertyValueFactory<>("songArtist"));
+
+
+        songNumberColumn.setCellValueFactory(param -> {
+            int rowIndex = tableviewPlaylist.getItems().indexOf(param.getValue());
+            return new javafx.beans.property.SimpleIntegerProperty(rowIndex + 1).asObject();
+        });
     }
 
 }

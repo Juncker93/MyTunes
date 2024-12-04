@@ -40,11 +40,12 @@
     <center>
         <TableView fx:id="tableviewPlaylist" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <columns>
-                <TableColumn prefWidth="64.0" text="#" />
-                <TableColumn minWidth="0.0" prefWidth="106.0" text="Cover" />
-                <TableColumn minWidth="0.0" prefWidth="160.0" text="Title" />
-                <TableColumn prefWidth="140.0" text="Album" />
-                <TableColumn prefWidth="129.0" text="Time" />
+                <TableColumn fx:id="songNumberColumn" prefWidth="64.0" text="#" />
+                <TableColumn fx:id="songCoverColumn" minWidth="0.0" prefWidth="106.0" text="Cover" />
+                <TableColumn fx:id="songTitleColumn" minWidth="0.0" prefWidth="167.20001220703125" text="Title" />
+                <TableColumn fx:id="albumColumn" prefWidth="132.79998779296875" text="Album" />
+                <TableColumn fx:id="songTimeColumn" prefWidth="129.0" text="Time" />
+            <TableColumn fx:id="artistColumn" prefWidth="109.60003662109375" text="Artist" />
             </columns>
         </TableView>
     </center>
