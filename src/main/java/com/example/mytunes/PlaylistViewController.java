@@ -1,6 +1,7 @@
 package com.example.mytunes;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,9 @@ public class PlaylistViewController
 
     @FXML
     private TextField changePlaylistName;
+
+    @FXML
+    private TableView<Song> tableviewPlaylist;
 
     @FXML
     private SearchableComboBox<Song> searchableComboBox;
@@ -28,7 +32,7 @@ public class PlaylistViewController
         changePlaylistName.textProperty().addListener((observable, oldValue, newValue) ->{
             if (playlist != null) {
                 playlist.setTitle(newValue);
-                myTunesController.setPlaylistTitle(playlist.getTitle());
+                myTunesController.setPlaylistTitle(playlist);
             }
         });
     }
@@ -43,13 +47,20 @@ public class PlaylistViewController
     @FXML
     private void addSong()
     {
-
+        playlist.getSongs().add(searchableComboBox.getSelectionModel().getSelectedItem());
+        addSongsToTableview();
     }
 
     private void addSongsToSearchBox()
     {
         searchableComboBox.getItems().clear();
         searchableComboBox.getItems().addAll(library.getSongs());
+    }
+
+    private void addSongsToTableview()
+    {
+        tableviewPlaylist.getItems().clear();
+        tableviewPlaylist.getItems().addAll(playlist.getSongs());
     }
 
 }

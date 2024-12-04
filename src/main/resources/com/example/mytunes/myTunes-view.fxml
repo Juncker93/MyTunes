@@ -13,6 +13,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -46,12 +47,15 @@
       </VBox>
    </left>
    <bottom>
-      <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../images/MusicRecord.png" />
                </image>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
             </ImageView>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
@@ -59,18 +63,41 @@
                   <Label text="Artist Name" />
                </children>
             </VBox>
+            <Region prefHeight="100.0" prefWidth="401.0" />
             <VBox alignment="CENTER" prefHeight="200.0">
                <children>
-                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                  <HBox alignment="CENTER_RIGHT" spacing="10.0">
                      <children>
-                        <Button mnemonicParsing="false" text="Button" />
-                        <Button mnemonicParsing="false" text="Button" />
-                        <Button mnemonicParsing="false" text="Button" />
+                        <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false">
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/BackwardButton.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></Button>
+                        <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/PlayButton.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></Button>
+                        <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
+                           <graphic>
+                              <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../images/ForwardButton.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic></Button>
                      </children>
                   </HBox>
                   <Slider />
                </children>
             </VBox>
+            <Region prefHeight="100.0" prefWidth="507.0" />
          </children></HBox>
    </bottom>
    <center>

@@ -4,14 +4,22 @@ import javafx.scene.image.Image;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 public class Playlist
 {
+    @Setter @Getter
+    public UUID Uuid = UUID.randomUUID();
     @Setter @Getter
     private String title;
     @Setter
     private PlaylistItemController playListController;
     private int duration;
     private Image imagePlaylist;
+
+    @Setter @Getter
+    ArrayList<Song> songs = new ArrayList<>();
 
     public Playlist(String title, int duration)
     {

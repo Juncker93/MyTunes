@@ -26,7 +26,7 @@
                     </HBox.margin>
                 </TextField>
                 <SearchableComboBox fx:id="searchableComboBox" maxHeight="25.0" maxWidth="100.0" />
-                <Button mnemonicParsing="false" text="Add Song">
+                <Button mnemonicParsing="false" onAction="#addSong" text="Add Song">
                     <HBox.margin>
                         <Insets />
                     </HBox.margin>
@@ -38,7 +38,7 @@
         </HBox>
     </top>
     <center>
-        <TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <TableView fx:id="tableviewPlaylist" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <columns>
                 <TableColumn prefWidth="64.0" text="#" />
                 <TableColumn minWidth="0.0" prefWidth="106.0" text="Cover" />

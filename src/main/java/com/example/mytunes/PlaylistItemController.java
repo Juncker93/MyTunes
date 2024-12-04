@@ -3,6 +3,7 @@ package com.example.mytunes;
 import javafx.fxml.FXML;
 
 import javafx.scene.control.Label;
+import lombok.Getter;
 import lombok.Setter;
 
 public class PlaylistItemController
@@ -11,7 +12,7 @@ public class PlaylistItemController
     MyTunesController myTunesController;
     @Setter
     Library library;
-    @Setter
+    @Setter @Getter
     Playlist playlist;
     @FXML
     private Label setPlaylistTitle;

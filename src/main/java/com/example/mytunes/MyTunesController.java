@@ -2,6 +2,7 @@ package com.example.mytunes;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -32,21 +33,49 @@ public class MyTunesController
         try {
             library.newPlaylist();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("playlist-item.fxml"));
+
             HBox playlist = loader.load();
             playlistVbox.getChildren().add(playlist);
             PlaylistItemController controller = loader.getController();
             controller.setMyTunesController(this);
+
             Playlist playList = library.newPlaylist();
             controller.setPlaylist(playList);
+
             playList.setPlayListController(controller);
+
+            playlist.setUserData(controller);
         } catch (IOException e) {
         e.printStackTrace();
         }
     }
 
-    public void setPlaylistTitle(String title)
+    public void setPlaylistTitle(Playlist playlist)
     {
-        //setPlaylistTitle.setText(title);
+        // Print the UUID of the playlist being passed in
+        logger.info("Attempting to update playlist with UUID: " + playlist.getUuid());
+
+        for (Node node : playlistVbox.getChildren()) {
+            if (node instanceof HBox) {
+                // Get the PlaylistItemController from userData
+                PlaylistItemController itemController = (PlaylistItemController) node.getUserData();
+
+                // Check if the controller is not null
+                if (itemController != null) {
+                    // Debug print for the UUID of the playlist in the sidebar
+                    logger.info("Sidebar playlist UUID: " + itemController.getPlaylist().getUuid());
+
+                    // Compare UUIDs instead of playlist names
+                    if (itemController.getPlaylist().getUuid().equals(playlist.getUuid())) {
+                        logger.info("UUIDs match! Updating playlist name...");
+                        itemController.updatePlaylistTitleUI();
+                        break;
+                    }
+                } else {
+                    logger.info("Item controller is null for this node.");
+                }
+            }
+        }
     }
 
     public void onPlaylistSelected(Playlist playlist)
