@@ -59,8 +59,8 @@
             </ImageView>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label text="Song Name" />
-                  <Label text="Artist Name" />
+                  <Label fx:id="songTitleLabel" text="Song Name" />
+                  <Label fx:id="songArtistLabel" text="Artist Name" />
                </children>
             </VBox>
             <Region prefHeight="100.0" prefWidth="401.0" />
@@ -76,7 +76,7 @@
                                  </image>
                               </ImageView>
                            </graphic></Button>
-                        <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" text="Button">
+                        <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#toggleSong" text="Button">
                            <graphic>
                               <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -94,9 +94,13 @@
                            </graphic></Button>
                      </children>
                   </HBox>
-                  <Slider />
+                  <Slider fx:id="progressBar" />
                </children>
             </VBox>
+            <Label fx:id="currentTimeLabel" minWidth="50.0" text="Time">
+               <HBox.margin>
+                  <Insets top="60.0" />
+               </HBox.margin></Label>
             <Region prefHeight="100.0" prefWidth="507.0" />
          </children></HBox>
    </bottom>

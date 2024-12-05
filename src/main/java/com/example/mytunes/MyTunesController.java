@@ -3,6 +3,8 @@ package com.example.mytunes;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -18,6 +20,17 @@ public class MyTunesController
     private VBox playlistVbox;
     @FXML
     private AnchorPane centerView;
+
+    @FXML
+    private Label songTitleLabel;
+    @FXML
+    private Label songArtistLabel;
+    @FXML
+    private Label currentTimeLabel;
+    @FXML
+    private Slider progressBar;
+
+    MediaPlayer mediaPlayer = new MediaPlayer(this);
 
     Library library = new Library();
 
@@ -149,6 +162,36 @@ public class MyTunesController
         }
     }
 
+    // Update the song UI with current song information
+    public void updateSongUI(Song song) {
+        if (song == null) {
+            // Clear UI if no song is selected
+            songTitleLabel.setText("No song playing");
+            songArtistLabel.setText("");
+            currentTimeLabel.setText("0:00");
+            //progressBar.setProgress(0);
+        } else {
+            // Update UI with song details
+            songTitleLabel.setText(song.getSongTitle());
+            songArtistLabel.setText(song.getSongArtist());
+            currentTimeLabel.setText("0:00");
+            //progressBar.setProgress(0);
+        }
+    }
 
+    @FXML
+    private void toggleSong() {
+        /*
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pauseSong();
+            } else {
+                mediaPlayer.resumeSong();
+            }
+        } else {
+            logger.warning("No song is currently loaded.");
+        }*/
 
+        mediaPlayer.doPlaySongInPlaylist(library.getSongs().getLast());
+    }
 }
