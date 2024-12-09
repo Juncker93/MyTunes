@@ -9,7 +9,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
 import java.util.logging.Logger;
 import java.io.File;
@@ -125,7 +124,8 @@ public class MyTunesController
     }
 
     @FXML
-    private void importSong() {
+    private void importSong()
+    {
 
         // create a File chooser
         FileChooser fil_chooser = new FileChooser();
@@ -164,7 +164,8 @@ public class MyTunesController
     }
 
     // Update the song UI with current song information
-    public void updateSongUI(Song song) {
+    public void updateSongUI(Song song)
+    {
         if (song == null) {
             // Clear UI if no song is selected
             songTitleLabel.setText("No song playing");
@@ -181,18 +182,59 @@ public class MyTunesController
     }
 
     @FXML
-    private void toggleSong() {
-        /*
-        if (mediaPlayer != null) {
+    private void toggleSong()
+    {
+        if (mediaPlayer.getMediaPlayer() != null) {
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.pauseSong();
             } else {
                 mediaPlayer.resumeSong();
             }
         } else {
-            logger.warning("No song is currently loaded.");
-        }*/
-
-        mediaPlayer.doPlaySongInPlaylist(library.getSongs().getLast());
+            // If no mediaPlayer exists, start playing the last song in the library
+            Song lastSong = library.getSongs().getLast();
+            Playlist currentPlaylist = selectedPlaylist; // Use the current playlist
+            if (lastSong != null) {
+                mediaPlayer.getReadyToPlaySongInPlaylist(lastSong, currentPlaylist);
+            } else {
+                logger.warning("No songs are available to play.");
+            }
+        }
     }
+
+    @FXML
+    private void playNextSong()
+    {
+        if (mediaPlayer.getMediaPlayer() != null && mediaPlayer.isNextSongAvailable()) {
+            Song nextSong = mediaPlayer.getNextSong();
+            Playlist currentPlaylist = selectedPlaylist;
+            if (nextSong != null && currentPlaylist != null) {
+                mediaPlayer.getReadyToPlaySongInPlaylist(nextSong, currentPlaylist);
+            } else {
+                logger.warning("Next song or playlist is unavailable.");
+            }
+        } else {
+            logger.warning("No more songs available in the playlist or no song is currently playing.");
+        }
+    }
+
+    @FXML
+    private void playPreviousSong() {
+        if (mediaPlayer.getMediaPlayer() != null) {
+            if (mediaPlayer.isPreviousSongAvailable()) {
+                Song previousSong = mediaPlayer.getPreviousSong();
+                Playlist currentPlaylist = selectedPlaylist;
+                if (previousSong != null && currentPlaylist != null) {
+                    mediaPlayer.getReadyToPlaySongInPlaylist(previousSong, currentPlaylist);
+                } else {
+                    logger.warning("Previous song or playlist is unavailable.");
+                }
+            } else {
+                logger.warning("No previous song available.");
+            }
+        } else {
+            logger.warning("Media player is not initialized.");
+        }
+    }
+
 }

@@ -166,6 +166,23 @@ public class MediaPlayer {
         }
     }
 
+    public Song getPreviousSong() {
+        if (playingPlaylist == null || playingPlaylist.getSongs().isEmpty()) {
+            return null; // No playlist or empty playlist
+        }
+
+        if (currentSongIndex > 0) {
+            return playingPlaylist.getSongs().get(--currentSongIndex); // Move to the previous song
+        } else {
+            currentSongIndex = 0; // Stay at the start of the playlist
+            return playingPlaylist.getSongs().get(currentSongIndex);
+        }
+    }
+
+    public boolean isPreviousSongAvailable() {
+        return playingPlaylist != null && currentSongIndex > 0;
+    }
+
     // Check if the song is currently playing
     public boolean isPlaying() {
         if (mediaPlayer != null) {
