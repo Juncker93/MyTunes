@@ -10,12 +10,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import java.util.logging.Logger;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
-public class MyTunesController
-{
+public class MyTunesController {
     @FXML
     private VBox playlistVbox;
     @FXML
@@ -30,19 +30,13 @@ public class MyTunesController
     @FXML
     private Slider progressBar;
 
-    MediaPlayer mediaPlayer = new MediaPlayer(this);
-
-    Library library = new Library();
-
-    Logger logger = Logger.getLogger(MyTunesController.class.getName());
-
-    Playlist selectedPlaylist;
-
-
+    private MediaPlayer mediaPlayer = new MediaPlayer(this);
+    private Library library = new Library();
+    private Logger logger = Logger.getLogger(MyTunesController.class.getName());
+    private Playlist selectedPlaylist;
 
     @FXML
-    private void addPlaylist()
-    {
+    private void addPlaylist() {
         try {
             library.newPlaylist();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("playlist-item.fxml"));
@@ -59,131 +53,88 @@ public class MyTunesController
 
             playlist.setUserData(controller);
         } catch (IOException e) {
-        e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
-    public void setPlaylistTitle(Playlist playlist)
-    {
-        // Print the UUID of the playlist being passed in
-        logger.info("Attempting to update playlist with UUID: " + playlist.getUuid());
-
+    public void setPlaylistTitle(Playlist playlist) {
+        // Update playlist title in the sidebar
         for (Node node : playlistVbox.getChildren()) {
             if (node instanceof HBox) {
-                // Get the PlaylistItemController from userData
                 PlaylistItemController itemController = (PlaylistItemController) node.getUserData();
-
-                // Check if the controller is not null
-                if (itemController != null) {
-                    // Debug print for the UUID of the playlist in the sidebar
-                    logger.info("Sidebar playlist UUID: " + itemController.getPlaylist().getUuid());
-
-                    // Compare UUIDs instead of playlist names
-                    if (itemController.getPlaylist().getUuid().equals(playlist.getUuid())) {
-                        logger.info("UUIDs match! Updating playlist name...");
-                        itemController.updatePlaylistTitleUI();
-                        break;
-                    }
-                } else {
-                    logger.info("Item controller is null for this node.");
+                if (itemController != null && itemController.getPlaylist().getUuid().equals(playlist.getUuid())) {
+                    itemController.updatePlaylistTitleUI();
+                    break;
                 }
             }
         }
     }
 
-    public void onPlaylistSelected(Playlist playlist)
-    {
-        if (playlist != null){
+    public void onPlaylistSelected(Playlist playlist) {
+        if (playlist != null) {
             switchToPlaylist(playlist);
         }
     }
 
-    private void switchToPlaylist(Playlist playlist)
-    {
+    private void switchToPlaylist(Playlist playlist) {
         try {
+            // Load playlist view
             FXMLLoader loader = new FXMLLoader(getClass().getResource("playlist-view.fxml"));
             BorderPane newView = loader.load();
 
-            PlaylistViewController controller = loader.getController(); // Get PlaylistViewController
+            // Get PlaylistViewController
+            PlaylistViewController controller = loader.getController();
             controller.setPlaylist(playlist); // Set the selected playlist in the PlaylistViewController
-            controller.setLibrary(library);// Optionally, pass the user library to the playlist view
+            controller.setLibrary(library); // Optionally, pass the user library to the playlist view
             controller.setMyTunesController(this);
-            controller.initializeCustom();
+            controller.initializeCustom(); // Initialize the PlaylistViewController
 
-            selectedPlaylist = playlist;
+            // Replace the center view
+            centerView.getChildren().clear(); // Clear any existing views
+            centerView.getChildren().add(newView); // Add the new view
 
-            centerView.getChildren().add(newView); // Set the new view in the center of the BorderPane
+            selectedPlaylist = playlist; // Update selectedPlaylist reference
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void setupUserDocuments()
-    {
-
-    }
-
     @FXML
-    private void importSong()
-    {
-
-        // create a File chooser
+    private void importSong() {
         FileChooser fil_chooser = new FileChooser();
-
-        // Make a filter of which file types the user can import
         fil_chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Audio Files", "*.FLAC", "*.MP3", "*.WAV"));
 
-        // Show to file chooser dialog window
         File selectedFile = fil_chooser.showOpenDialog(centerView.getScene().getWindow());
-
-        // Did the user select a file?
         if (selectedFile != null) {
-            // Create a new songParser object
             SongFinder songFinder = new SongFinder();
-
-            // Grab all the metadata from the song file
             Song newSong = songFinder.findSong(selectedFile);
-
-            // Add the song to the users library
             library.addSong(newSong);
 
-            // Log
             logger.info("Added song: " + library.getSongs().getLast());
 
-            // If this album doesn't exist in the users library, create it here
             if (!library.doesAlbumExist(newSong.getAlbumTitle())) {
-                // If the album doesn't exist, create a new one
                 library.createNewAlbum(newSong);
-
-            } else if (library.doesAlbumExist(newSong.getAlbumTitle())) {
-                // If the imported song comes from the same album, then add it to the album
+            } else {
                 Album album = library.findAlbum(newSong.getAlbumTitle());
                 album.addSongToAlbum(newSong);
             }
         }
     }
 
-    // Update the song UI with current song information
-    public void updateSongUI(Song song)
-    {
+    public void updateSongUI(Song song) {
         if (song == null) {
-            // Clear UI if no song is selected
             songTitleLabel.setText("No song playing");
             songArtistLabel.setText("");
             currentTimeLabel.setText("0:00");
-            //progressBar.setProgress(0);
         } else {
-            // Update UI with song details
             songTitleLabel.setText(song.getSongTitle());
             songArtistLabel.setText(song.getSongArtist());
             currentTimeLabel.setText("0:00");
-            //progressBar.setProgress(0);
         }
     }
 
     @FXML
-    private void toggleSong()
-    {
+    private void toggleSong() {
         if (mediaPlayer.getMediaPlayer() != null) {
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.pauseSong();
@@ -191,11 +142,10 @@ public class MyTunesController
                 mediaPlayer.resumeSong();
             }
         } else {
-            // If no mediaPlayer exists, start playing the last song in the library
-            Song lastSong = library.getSongs().getLast();
-            Playlist currentPlaylist = selectedPlaylist; // Use the current playlist
-            if (lastSong != null) {
-                mediaPlayer.getReadyToPlaySongInPlaylist(lastSong, currentPlaylist);
+            Song firstSong = library.getSongs().getFirst();
+            Playlist currentPlaylist = selectedPlaylist;
+            if (firstSong != null) {
+                mediaPlayer.getReadyToPlaySongInPlaylist(firstSong, currentPlaylist);
             } else {
                 logger.warning("No songs are available to play.");
             }
@@ -203,8 +153,7 @@ public class MyTunesController
     }
 
     @FXML
-    private void playNextSong()
-    {
+    private void playNextSong() {
         if (mediaPlayer.getMediaPlayer() != null && mediaPlayer.isNextSongAvailable()) {
             Song nextSong = mediaPlayer.getNextSong();
             Playlist currentPlaylist = selectedPlaylist;
@@ -236,5 +185,4 @@ public class MyTunesController
             logger.warning("Media player is not initialized.");
         }
     }
-
 }
