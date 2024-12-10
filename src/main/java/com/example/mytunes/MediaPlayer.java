@@ -33,7 +33,8 @@ public class MediaPlayer {
 
 
     // Play the song
-    public void getReadyToPlaySongInPlaylist(Song songToPlay, Playlist playlistToPlay) {
+    public void getReadyToPlaySongInPlaylist(Song songToPlay, Playlist playlistToPlay)
+    {
         // Check if the song file exists
         if (songToPlay.getSongFile() == null || !songToPlay.getSongFile().exists()) {
             logger.warning("Invalid song file.");
@@ -58,8 +59,8 @@ public class MediaPlayer {
 
     }
 
-    public void doPlaySongInPlaylist(Song songToPlay) {
-
+    public void doPlaySongInPlaylist(Song songToPlay)
+    {
         // Create a Media object from the song's file path
         File songFile = songToPlay.getSongFile();
         Media media = new Media(songFile.toURI().toString());
@@ -99,14 +100,16 @@ public class MediaPlayer {
     @Getter @Setter
     public int currentSongIndex = 0;
 
-    public boolean isNextSongAvailable() {
+    public boolean isNextSongAvailable()
+    {
         if (playingPlaylist.getSongs().isEmpty()) {
             return false; // Playlist is empty
         }
         return currentSongIndex < playingPlaylist.getSongs().size() - 1; // Check if next song exists
     }
 
-    public Song getNextSong() {
+    public Song getNextSong()
+    {
         if (playingPlaylist.getSongs().isEmpty()) {
             return null; // Return null if the playlist is null or empty
         }
@@ -120,7 +123,8 @@ public class MediaPlayer {
 
     }
 
-    public Song getCurrentSong() {
+    public Song getCurrentSong()
+    {
         if (playingPlaylist.getSongs().isEmpty()) {
             return null; // No song in the playlist
         }
@@ -148,7 +152,8 @@ public class MediaPlayer {
         }
     }
 
-    public void skipSong() {
+    public void skipSong()
+    {
         if (mediaPlayer != null) {
             if (isNextSongAvailable()) {
                 mediaPlayer.stop();
@@ -166,7 +171,8 @@ public class MediaPlayer {
         }
     }
 
-    public Song getPreviousSong() {
+    public Song getPreviousSong()
+    {
         if (playingPlaylist == null || playingPlaylist.getSongs().isEmpty()) {
             return null; // No playlist or empty playlist
         }
@@ -179,7 +185,8 @@ public class MediaPlayer {
         }
     }
 
-    public boolean isPreviousSongAvailable() {
+    public boolean isPreviousSongAvailable()
+    {
         return playingPlaylist != null && currentSongIndex > 0;
     }
 
@@ -192,14 +199,16 @@ public class MediaPlayer {
     }
 
     // Helper method to format Duration into a string
-    private String formatDuration(Duration duration) {
+    private String formatDuration(Duration duration)
+    {
         int minutes = (int) duration.toMinutes();
         int seconds = (int) duration.toSeconds() % 60;
         return String.format("%d:%02d", minutes, seconds);
     }
 
     // Get the current play time of the song
-    public Duration getCurrentTime() {
+    public Duration getCurrentTime()
+    {
         if (mediaPlayer != null) {
             return mediaPlayer.getCurrentTime();
         }

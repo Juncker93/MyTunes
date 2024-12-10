@@ -12,8 +12,7 @@ import org.controlsfx.control.SearchableComboBox;
 
 import java.awt.*;
 
-public class PlaylistViewController
-{
+public class PlaylistViewController {
     @Setter
     MyTunesController myTunesController;
 
@@ -99,8 +98,6 @@ public class PlaylistViewController
     private void setupCells()
     {
         albumColumn.setCellValueFactory(new PropertyValueFactory<>("albumTitle"));
-
-        // Set up other columns as needed
         songTimeColumn.setCellValueFactory(new PropertyValueFactory<>("songDurationFormatted"));
         songTitleColumn.setCellValueFactory(new PropertyValueFactory<>("songTitle"));
         artistColumn.setCellValueFactory(new PropertyValueFactory<>("songArtist"));
@@ -108,6 +105,14 @@ public class PlaylistViewController
         songNumberColumn.setCellValueFactory(param -> {
             int rowIndex = tableviewPlaylist.getItems().indexOf(param.getValue());
             return new javafx.beans.property.SimpleIntegerProperty(rowIndex + 1).asObject();
+        });
+
+        // Add a listener for song selection
+        tableviewPlaylist.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                int selectedIndex = tableviewPlaylist.getSelectionModel().getSelectedIndex();
+                myTunesController.playSongAtIndex(selectedIndex);
+            }
         });
     }
 }

@@ -36,7 +36,8 @@ public class MyTunesController {
     private Playlist selectedPlaylist;
 
     @FXML
-    private void addPlaylist() {
+    private void addPlaylist()
+    {
         try {
             library.newPlaylist();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("playlist-item.fxml"));
@@ -57,7 +58,8 @@ public class MyTunesController {
         }
     }
 
-    public void setPlaylistTitle(Playlist playlist) {
+    public void setPlaylistTitle(Playlist playlist)
+    {
         // Update playlist title in the sidebar
         for (Node node : playlistVbox.getChildren()) {
             if (node instanceof HBox) {
@@ -70,13 +72,15 @@ public class MyTunesController {
         }
     }
 
-    public void onPlaylistSelected(Playlist playlist) {
+    public void onPlaylistSelected(Playlist playlist)
+    {
         if (playlist != null) {
             switchToPlaylist(playlist);
         }
     }
 
-    private void switchToPlaylist(Playlist playlist) {
+    private void switchToPlaylist(Playlist playlist)
+    {
         try {
             // Load playlist view
             FXMLLoader loader = new FXMLLoader(getClass().getResource("playlist-view.fxml"));
@@ -100,7 +104,8 @@ public class MyTunesController {
     }
 
     @FXML
-    private void importSong() {
+    private void importSong()
+    {
         FileChooser fil_chooser = new FileChooser();
         fil_chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Audio Files", "*.FLAC", "*.MP3", "*.WAV"));
 
@@ -121,7 +126,8 @@ public class MyTunesController {
         }
     }
 
-    public void updateSongUI(Song song) {
+    public void updateSongUI(Song song)
+    {
         if (song == null) {
             songTitleLabel.setText("No song playing");
             songArtistLabel.setText("");
@@ -134,7 +140,8 @@ public class MyTunesController {
     }
 
     @FXML
-    private void toggleSong() {
+    private void toggleSong()
+    {
         if (mediaPlayer.getMediaPlayer() != null) {
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.pauseSong();
@@ -153,7 +160,8 @@ public class MyTunesController {
     }
 
     @FXML
-    private void playNextSong() {
+    private void playNextSong()
+    {
         if (mediaPlayer.getMediaPlayer() != null && mediaPlayer.isNextSongAvailable()) {
             Song nextSong = mediaPlayer.getNextSong();
             Playlist currentPlaylist = selectedPlaylist;
@@ -168,7 +176,8 @@ public class MyTunesController {
     }
 
     @FXML
-    private void playPreviousSong() {
+    private void playPreviousSong()
+    {
         if (mediaPlayer.getMediaPlayer() != null) {
             if (mediaPlayer.isPreviousSongAvailable()) {
                 Song previousSong = mediaPlayer.getPreviousSong();
@@ -185,4 +194,15 @@ public class MyTunesController {
             logger.warning("Media player is not initialized.");
         }
     }
+
+    public void playSongAtIndex(int index)
+    {
+        if (selectedPlaylist != null && index >= 0 && index < selectedPlaylist.getSongs().size()) {
+            Song songToPlay = selectedPlaylist.getSongs().get(index);
+            mediaPlayer.getReadyToPlaySongInPlaylist(songToPlay, selectedPlaylist);
+        } else {
+            logger.warning("Invalid song index or playlist is not selected.");
+        }
+    }
+
 }
