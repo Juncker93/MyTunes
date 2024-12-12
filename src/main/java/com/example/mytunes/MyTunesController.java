@@ -9,6 +9,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -125,6 +126,47 @@ public class MyTunesController {
             }
         }
     }
+
+    @FXML
+    private void importSongsFromDirectory()
+    {
+        DirectoryChooser dirChooser = new DirectoryChooser();
+        dirChooser.setTitle("Select Directory Containing Audio Files");
+
+        File selectedDirectory = dirChooser.showDialog(centerView.getScene().getWindow());
+        if (selectedDirectory != null && selectedDirectory.isDirectory()) {
+            File[] audioFiles = selectedDirectory.listFiles(file ->
+                    file.isFile() && (
+                            file.getName().toLowerCase().endsWith(".flac") ||
+                                    file.getName().toLowerCase().endsWith(".mp3") ||
+                                    file.getName().toLowerCase().endsWith(".wav")
+                    )
+            );
+
+            if (audioFiles != null && audioFiles.length > 0) {
+                SongFinder songFinder = new SongFinder();
+
+                for (File audioFile : audioFiles) {
+                    Song newSong = songFinder.findSong(audioFile);
+                    library.addSong(newSong);
+
+                    logger.info("Added song: " + library.getSongs().getLast());
+
+                    if (!library.doesAlbumExist(newSong.getAlbumTitle())) {
+                        library.createNewAlbum(newSong);
+                    } else {
+                        Album album = library.findAlbum(newSong.getAlbumTitle());
+                        album.addSongToAlbum(newSong);
+                    }
+                }
+            } else {
+                logger.info("No audio files found in the selected directory.");
+            }
+        } else {
+            logger.info("No directory was selected or it is not valid.");
+        }
+    }
+
 
     public void updateSongUI(Song song)
     {
