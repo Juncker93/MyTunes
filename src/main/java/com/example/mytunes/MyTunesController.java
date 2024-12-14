@@ -247,4 +247,57 @@ public class MyTunesController {
         }
     }
 
+    @FXML
+    public void initialize()
+    {
+        // Automatically import songs from the "Music" folder in Documents
+        // Automatically import songs from the "Music" folder in Documents
+        try {
+            // Path to the "Music" folder inside Documents
+            File musicDirectory = new File(System.getProperty("user.home") + "/Documents/Music");
+
+            // Create the folder if it does not exist
+            if (!musicDirectory.exists()) {
+                if (musicDirectory.mkdirs()) {
+                    logger.info("'Music' folder created at: " + musicDirectory.getAbsolutePath());
+                } else {
+                    logger.warning("Failed to create 'Music' folder: " + musicDirectory.getAbsolutePath());
+                }
+            }
+
+            // Check if the folder exists
+            if (musicDirectory.exists() && musicDirectory.isDirectory()) {
+                // Filter for audio files with .mp3 extension
+                File[] audioFiles = musicDirectory.listFiles(file ->
+                        file.isFile() &&
+                                file.getName().toLowerCase().endsWith(".mp3")
+                );
+
+                if (audioFiles != null && audioFiles.length > 0) {
+                    SongFinder songFinder = new SongFinder();
+                    for (File audioFile : audioFiles) {
+                        Song newSong = songFinder.findSong(audioFile);
+                        library.addSong(newSong);
+
+                        // Check if album exists, if not, create a new one
+                        if (!library.doesAlbumExist(newSong.getAlbumTitle())) {
+                            library.createNewAlbum(newSong);
+                        } else {
+                            Album album = library.findAlbum(newSong.getAlbumTitle());
+                            album.addSongToAlbum(newSong);
+                        }
+                    }
+                    logger.info("Automatic import: " + audioFiles.length + " songs were loaded from the 'Music' folder in Documents.");
+                } else {
+                    logger.info("No MP3 files were found in the 'Music' folder: " + musicDirectory.getAbsolutePath());
+                }
+            } else {
+                logger.warning("'Music' folder in Documents does not exist: " + musicDirectory.getAbsolutePath());
+            }
+        } catch (Exception e) {
+            logger.severe("Error occurred during automatic import at startup: " + e.getMessage());
+        }
+    }
+
+
 }
