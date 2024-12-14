@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import lombok.Getter;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class MyTunesController {
     @FXML
     private Slider progressBar;
 
+    @Getter
     private MediaPlayer mediaPlayer = new MediaPlayer(this);
     private Library library = new Library();
     private Logger logger = Logger.getLogger(MyTunesController.class.getName());
@@ -298,6 +300,5 @@ public class MyTunesController {
             logger.severe("Error occurred during automatic import at startup: " + e.getMessage());
         }
     }
-
 
 }

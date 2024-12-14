@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import org.controlsfx.control.SearchableComboBox?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.mytunes.PlaylistViewController">
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.mytunes.PlaylistViewController">
     <top>
         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="25.0">
             <children>
@@ -31,6 +31,7 @@
                         <Insets />
                     </HBox.margin>
                 </Button>
+            <Button layoutX="434.0" layoutY="48.0" mnemonicParsing="false" onAction="#removeSong" text="Remove Song" />
             </children>
             <BorderPane.margin>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

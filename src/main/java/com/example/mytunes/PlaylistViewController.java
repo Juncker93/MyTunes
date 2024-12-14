@@ -74,6 +74,42 @@ public class PlaylistViewController {
         refreshTableview(); // Update the table view after adding a song
     }
 
+    @FXML
+    private void removeSong() {
+        // Get the selected song from the TableView
+        Song selectedSong = tableviewPlaylist.getSelectionModel().getSelectedItem();
+
+        if (selectedSong != null && playlist != null) {
+            // Check if the selected song is currently playing
+            if (myTunesController.getMediaPlayer().getCurrentSong() == selectedSong) {
+                // Stop and dispose of the current playback, then remove the song
+                myTunesController.getMediaPlayer().stopSong();
+                myTunesController.getMediaPlayer().getMediaPlayer().dispose(); // Dispose of media player resources
+
+                playlist.getSongs().remove(selectedSong);
+
+                if (!playlist.getSongs().isEmpty()) {
+                    // Play the next song in the playlist (or start from the first one)
+                    myTunesController.playSongAtIndex(0); // Playing the first song in the updated playlist
+                } else {
+                    // Playlist is empty - stop playback and update UI
+                    myTunesController.getMediaPlayer().stopSong();
+                    myTunesController.updateSongUI(null); // Reset the UI to show no song is playing
+                    System.out.println("Playlist is empty. Stopping playback.");
+                }
+            } else {
+                // Just remove the song if it is not currently playing
+                playlist.getSongs().remove(selectedSong);
+            }
+
+            // Update the UI to reflect the changes
+            refreshTableview();
+            System.out.println("Removed song: " + selectedSong.getSongTitle());
+        } else {
+            System.out.println("No song selected or playlist is null.");
+        }
+    }
+
     private void addSongsToSearchBox()
     {
         searchableComboBox.getItems().clear();
