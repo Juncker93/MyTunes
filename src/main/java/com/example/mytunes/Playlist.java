@@ -32,5 +32,11 @@ public class Playlist
 
     }
 
+    // Ensures that the playlist title is shown in the ChoiceDialog
+    @Override
+    public String toString() {
+        return title + " (" + songs.size() + " songs)";
+    }
+
 
 }

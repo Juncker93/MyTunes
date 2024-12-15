@@ -3,8 +3,7 @@ package com.example.mytunes;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -42,7 +41,6 @@ public class MyTunesController {
     private void addPlaylist()
     {
         try {
-            library.newPlaylist();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("playlist-item.fxml"));
 
             HBox playlist = loader.load();
@@ -50,11 +48,14 @@ public class MyTunesController {
             PlaylistItemController controller = loader.getController();
             controller.setMyTunesController(this);
 
+            // Create a single new playlist and add it to the library
             Playlist playList = library.newPlaylist();
             controller.setPlaylist(playList);
 
+            // Associate the playlist with its controller
             playList.setPlayListController(controller);
 
+            // Store the controller in the UI node
             playlist.setUserData(controller);
         } catch (IOException e) {
             e.printStackTrace();
@@ -253,7 +254,6 @@ public class MyTunesController {
     public void initialize()
     {
         // Automatically import songs from the "Music" folder in Documents
-        // Automatically import songs from the "Music" folder in Documents
         try {
             // Path to the "Music" folder inside Documents
             File musicDirectory = new File(System.getProperty("user.home") + "/Documents/Music");
@@ -299,6 +299,66 @@ public class MyTunesController {
         } catch (Exception e) {
             logger.severe("Error occurred during automatic import at startup: " + e.getMessage());
         }
+    }
+
+    @FXML
+    private void deletePlaylist() {
+        // Ensure there are playlists to delete
+        if (library.playlists.isEmpty()) {
+            logger.info("No playlists available for deletion.");
+            return;
+        }
+
+        // Create a dialog to select a playlist
+        ChoiceDialog<Playlist> dialog = new ChoiceDialog<>(library.playlists.get(0), library.playlists);
+        dialog.setTitle("Delete Playlist");
+        dialog.setHeaderText("Select a playlist to delete");
+        dialog.setContentText("Choose a playlist:");
+
+        // Show the dialog and capture the user selection
+        dialog.showAndWait().ifPresent(selectedPlaylist -> {
+            // Confirm deletion
+            Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmationAlert.setTitle("Confirm Deletion");
+            confirmationAlert.setHeaderText("Are you sure you want to delete the playlist?");
+            confirmationAlert.setContentText("Playlist: " + selectedPlaylist.getTitle());
+
+            confirmationAlert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    // Delete the playlist from the library
+                    library.playlists.remove(selectedPlaylist);
+
+                    // Remove the playlist from the UI
+                    playlistVbox.getChildren().removeIf(node -> {
+                        if (node instanceof HBox) {
+                            PlaylistItemController itemController = (PlaylistItemController) node.getUserData();
+                            return itemController != null && itemController.getPlaylist().getUuid().equals(selectedPlaylist.getUuid());
+                        }
+                        return false;
+                    });
+
+                    if (this.selectedPlaylist != null && this.selectedPlaylist.getUuid().equals(selectedPlaylist.getUuid())) {
+                        this.selectedPlaylist = null;
+
+                        // Attempt to switch to another available playlist, if any exist
+                        if (!library.playlists.isEmpty()) {
+                            Playlist newPlaylist = library.playlists.get(0); // Select the first available playlist
+                            switchToPlaylist(newPlaylist);
+                        } else {
+                            centerView.getChildren().clear(); // Clear the view if no playlists are left
+                        }
+                    }
+
+                    // Log the deletion
+                    logger.info("Deleted playlist: " + selectedPlaylist.getTitle());
+
+                    // Reset selected playlist if it was the deleted one
+                    if (this.selectedPlaylist != null && this.selectedPlaylist.getUuid().equals(selectedPlaylist.getUuid())) {
+                        this.selectedPlaylist = null;
+                    }
+                }
+            });
+        });
     }
 
 }
