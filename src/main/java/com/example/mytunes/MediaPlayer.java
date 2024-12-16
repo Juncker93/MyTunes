@@ -16,6 +16,9 @@ public class MediaPlayer {
 
     public MediaPlayer(MyTunesController myTunesController) {
         this.myTunesController = myTunesController;
+
+        // Debug log
+        System.out.println("MediaPlayer instance created: " + this);
     }
 
     Playlist playingPlaylist;

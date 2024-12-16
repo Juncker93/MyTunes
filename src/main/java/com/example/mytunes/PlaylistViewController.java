@@ -46,11 +46,7 @@ public class PlaylistViewController {
     @Setter
     private Playlist playlist;
 
-    @Setter
-    private Library library;
-
-    private void setChangePlaylistName()
-    {
+    private void setChangePlaylistName() {
         changePlaylistName.textProperty().addListener((observable, oldValue, newValue) -> {
             if (playlist != null) {
                 playlist.setTitle(newValue);
@@ -59,8 +55,7 @@ public class PlaylistViewController {
         });
     }
 
-    public void initializeCustom()
-    {
+    public void initializeCustom() {
         setupCells();
         setChangePlaylistName();
         loadPlaylistData(); // Load the initial playlist data
@@ -68,10 +63,51 @@ public class PlaylistViewController {
     }
 
     @FXML
-    private void addSong()
-    {
-        playlist.getSongs().add(searchableComboBox.getSelectionModel().getSelectedItem());
-        refreshTableview(); // Update the table view after adding a song
+    private void addSong() {
+        // Ensure playlist is set
+        if (playlist == null) {
+            System.out.println("Playlist is null. Cannot add song.");
+            return;
+        }
+
+        // Get the selected song from the SearchableComboBox
+        Song selectedSong = searchableComboBox.getSelectionModel().getSelectedItem();
+
+        if (selectedSong != null) {
+            // Add the song to the playlist if it's not already there
+            if (!playlist.getSongs().contains(selectedSong)) {
+                playlist.getSongs().add(selectedSong);
+                System.out.println("Added song to playlist: " + playlist.getTitle());
+            }
+
+            // Singleton: Add the song to the library if it's not already there
+            Library library = Library.getInstance();
+            if (!library.getSongs().contains(selectedSong)) {
+                library.addSong(selectedSong);
+                System.out.println("Added song to library: " + selectedSong.getSongTitle());
+            }
+
+            // Ensure the playlist is part of the library
+            if (!library.getPlaylists().contains(playlist)) {
+                library.getPlaylists().add(playlist);
+                System.out.println("Playlist added to library: " + playlist.getTitle());
+            }
+
+            // Debugging information before saving
+            System.out.println("Checking data in library before saving:");
+            System.out.println("Number of songs in the library: " + library.getSongs().size());
+            System.out.println("Number of playlists in the library: " + library.getPlaylists().size());
+            System.out.println("Number of albums in the library: " + library.getAlbums().size());
+
+            // Save the library to persist the changes
+            DataMethod.saveLibrary(library);
+
+            // Update the UI to reflect changes
+            refreshTableview();
+            System.out.println("Saved library after adding song: " + selectedSong.getSongTitle() + " to playlist: " + playlist.getTitle());
+        } else {
+            System.out.println("No song selected to add.");
+        }
     }
 
     @FXML
@@ -110,29 +146,25 @@ public class PlaylistViewController {
         }
     }
 
-    private void addSongsToSearchBox()
-    {
+    private void addSongsToSearchBox() {
         searchableComboBox.getItems().clear();
-        searchableComboBox.getItems().addAll(library.getSongs());
+        searchableComboBox.getItems().addAll(Library.getInstance().getSongs());
     }
 
-    private void refreshTableview()
-    {
+    private void refreshTableview() {
         tableviewPlaylist.getItems().clear();
         tableviewPlaylist.getItems().addAll(playlist.getSongs());
         tableviewPlaylist.refresh();
     }
 
-    public void loadPlaylistData()
-    {
+    public void loadPlaylistData() {
         if (playlist != null) {
             changePlaylistName.setText(playlist.getTitle());
             refreshTableview(); // Ensure table view is updated with current playlist songs
         }
     }
 
-    private void setupCells()
-    {
+    private void setupCells() {
         albumColumn.setCellValueFactory(new PropertyValueFactory<>("albumTitle"));
         songTimeColumn.setCellValueFactory(new PropertyValueFactory<>("songDurationFormatted"));
         songTitleColumn.setCellValueFactory(new PropertyValueFactory<>("songTitle"));

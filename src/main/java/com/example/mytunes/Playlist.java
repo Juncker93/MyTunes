@@ -4,19 +4,24 @@ import javafx.scene.image.Image;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Playlist
+public class Playlist implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     @Setter @Getter
-    public UUID Uuid = UUID.randomUUID();
+    private UUID Uuid = UUID.randomUUID();
     @Setter @Getter
     private String title;
     @Setter
-    private PlaylistItemController playListController;
+    private transient PlaylistItemController playListController;
     private int duration;
-    private Image imagePlaylist;
+
+    @Getter
+    private transient Image imagePlaylist;
 
     @Setter @Getter
     ArrayList<Song> songs = new ArrayList<>();
@@ -25,11 +30,12 @@ public class Playlist
     {
         this.title = title;
         this.duration = duration;
+
+        System.out.println("Playlist instance created: " + this + " with title: " + this.title);
     }
 
-    public Playlist()
-    {
-
+    public Playlist() {
+        System.out.println("Empty Playlist instance created: " + this);
     }
 
     // Ensures that the playlist title is shown in the ChoiceDialog

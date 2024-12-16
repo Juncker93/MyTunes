@@ -33,13 +33,12 @@ public class MyTunesController {
 
     @Getter
     private MediaPlayer mediaPlayer = new MediaPlayer(this);
-    private Library library = new Library();
     private Logger logger = Logger.getLogger(MyTunesController.class.getName());
     private Playlist selectedPlaylist;
 
+
     @FXML
-    private void addPlaylist()
-    {
+    private void addPlaylist() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("playlist-item.fxml"));
 
@@ -48,8 +47,8 @@ public class MyTunesController {
             PlaylistItemController controller = loader.getController();
             controller.setMyTunesController(this);
 
-            // Create a single new playlist and add it to the library
-            Playlist playList = library.newPlaylist();
+            // Create a new playlist and add it to the Library singleton
+            Playlist playList = Library.getInstance().newPlaylist();
             controller.setPlaylist(playList);
 
             // Associate the playlist with its controller
@@ -62,8 +61,7 @@ public class MyTunesController {
         }
     }
 
-    public void setPlaylistTitle(Playlist playlist)
-    {
+    public void setPlaylistTitle(Playlist playlist) {
         // Update playlist title in the sidebar
         for (Node node : playlistVbox.getChildren()) {
             if (node instanceof HBox) {
@@ -76,48 +74,52 @@ public class MyTunesController {
         }
     }
 
-    public void onPlaylistSelected(Playlist playlist)
-    {
+    public void onPlaylistSelected(Playlist playlist) {
         if (playlist != null) {
             switchToPlaylist(playlist);
         }
     }
 
-    private void switchToPlaylist(Playlist playlist)
-    {
+    private void switchToPlaylist(Playlist playlist) {
         try {
-            // Load playlist view
+            // Load the FXML for the playlist view
             FXMLLoader loader = new FXMLLoader(getClass().getResource("playlist-view.fxml"));
             BorderPane newView = loader.load();
 
-            // Get PlaylistViewController
+            // Get the PlaylistViewController
             PlaylistViewController controller = loader.getController();
-            controller.setPlaylist(playlist); // Set the selected playlist in the PlaylistViewController
-            controller.setLibrary(library); // Optionally, pass the user library to the playlist view
+
+            // Set the playlist and other properties
+            controller.setPlaylist(playlist);
             controller.setMyTunesController(this);
-            controller.initializeCustom(); // Initialize the PlaylistViewController
+            controller.initializeCustom(); // Initialize the playlist data/UI
 
-            // Replace the center view
-            centerView.getChildren().clear(); // Clear any existing views
-            centerView.getChildren().add(newView); // Add the new view
+            // Replace the center view with the playlist view
+            centerView.getChildren().clear();
+            centerView.getChildren().add(newView);
 
-            selectedPlaylist = playlist; // Update selectedPlaylist reference
+            // Update the selected playlist reference
+            selectedPlaylist = playlist;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @FXML
-    private void importSong()
-    {
-        FileChooser fil_chooser = new FileChooser();
-        fil_chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Audio Files", "*.FLAC", "*.MP3", "*.WAV"));
+    private void importSong() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Audio Files", "*.FLAC", "*.MP3", "*.WAV"));
 
-        File selectedFile = fil_chooser.showOpenDialog(centerView.getScene().getWindow());
+        File selectedFile = fileChooser.showOpenDialog(centerView.getScene().getWindow());
         if (selectedFile != null) {
             SongFinder songFinder = new SongFinder();
             Song newSong = songFinder.findSong(selectedFile);
+
+            // Work with the singleton instance of Library
+            Library library = Library.getInstance();
             library.addSong(newSong);
+
+            DataMethod.saveLibrary(library);
 
             logger.info("Added song: " + library.getSongs().getLast());
 
@@ -131,8 +133,7 @@ public class MyTunesController {
     }
 
     @FXML
-    private void importSongsFromDirectory()
-    {
+    private void importSongsFromDirectory() {
         DirectoryChooser dirChooser = new DirectoryChooser();
         dirChooser.setTitle("Select Directory Containing Audio Files");
 
@@ -151,7 +152,13 @@ public class MyTunesController {
 
                 for (File audioFile : audioFiles) {
                     Song newSong = songFinder.findSong(audioFile);
+
+                    // Use the singleton instance of Library
+                    Library library = Library.getInstance();
                     library.addSong(newSong);
+
+                    DataMethod.saveLibrary(library);
+                    logger.info("Saved updated library with new songs.");
 
                     logger.info("Added song: " + library.getSongs().getLast());
 
@@ -201,7 +208,7 @@ public class MyTunesController {
                 mediaPlayer.resumeSong();
             }
         } else {
-            Song firstSong = library.getSongs().getFirst();
+            Song firstSong = Library.getInstance().getSongs().getFirst();
             Playlist currentPlaylist = selectedPlaylist;
             if (firstSong != null) {
                 mediaPlayer.getReadyToPlaySongInPlaylist(firstSong, currentPlaylist);
@@ -258,28 +265,29 @@ public class MyTunesController {
     }
 
     @FXML
-    public void initialize()
-    {
-        // Automatically import songs from the "Music" folder in Documents
+    public void initialize() {
+        logger.info("MyTunesController initialized.");
+
+        // Get the singleton instance of the Library
+        Library library = Library.getInstance();
+        logger.info("Library instance in use: " + library);
+
+        // Debugging information
+        System.out.println("Library loaded successfully with " + library.getSongs().size() + " songs and " + library.getPlaylists().size() + " playlists.");
+
         try {
-            // Path to the "Music" folder inside Documents
+            // Automatic import logic for songs from the "Music" folder
             File musicDirectory = new File(System.getProperty("user.home") + "/Documents/Music");
 
-            // Create the folder if it does not exist
-            if (!musicDirectory.exists()) {
-                if (musicDirectory.mkdirs()) {
-                    logger.info("'Music' folder created at: " + musicDirectory.getAbsolutePath());
-                } else {
-                    logger.warning("Failed to create 'Music' folder: " + musicDirectory.getAbsolutePath());
-                }
+            if (!musicDirectory.exists() && !musicDirectory.mkdirs()) {
+                logger.warning("Failed to create 'Music' folder: " + musicDirectory.getAbsolutePath());
+                return;
             }
 
-            // Check if the folder exists
-            if (musicDirectory.exists() && musicDirectory.isDirectory()) {
-                // Filter for audio files with .mp3 extension
+            if (musicDirectory.isDirectory()) {
+                // Load songs from the directory
                 File[] audioFiles = musicDirectory.listFiles(file ->
-                        file.isFile() &&
-                                file.getName().toLowerCase().endsWith(".mp3")
+                        file.isFile() && file.getName().toLowerCase().endsWith(".mp3")
                 );
 
                 if (audioFiles != null && audioFiles.length > 0) {
@@ -288,28 +296,26 @@ public class MyTunesController {
                         Song newSong = songFinder.findSong(audioFile);
                         library.addSong(newSong);
 
-                        // Check if album exists, if not, create a new one
                         if (!library.doesAlbumExist(newSong.getAlbumTitle())) {
                             library.createNewAlbum(newSong);
                         } else {
-                            Album album = library.findAlbum(newSong.getAlbumTitle());
-                            album.addSongToAlbum(newSong);
+                            library.findAlbum(newSong.getAlbumTitle()).addSongToAlbum(newSong);
                         }
                     }
                     logger.info("Automatic import: " + audioFiles.length + " songs were loaded from the 'Music' folder in Documents.");
                 } else {
-                    logger.info("No MP3 files were found in the 'Music' folder: " + musicDirectory.getAbsolutePath());
+                    logger.info("No MP3 files found in: " + musicDirectory.getAbsolutePath());
                 }
-            } else {
-                logger.warning("'Music' folder in Documents does not exist: " + musicDirectory.getAbsolutePath());
             }
         } catch (Exception e) {
-            logger.severe("Error occurred during automatic import at startup: " + e.getMessage());
+            logger.severe("Error during automatic import: " + e.getMessage());
         }
     }
 
     @FXML
     private void deletePlaylist() {
+        Library library = Library.getInstance(); // Use the singleton instance of Library
+
         // Ensure there are playlists to delete
         if (library.playlists.isEmpty()) {
             logger.info("No playlists available for deletion.");

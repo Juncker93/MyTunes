@@ -3,15 +3,59 @@ package com.example.mytunes;
 import javafx.scene.image.Image;
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Library
+public class Library implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
+    private static Library instance;
+
+    @Getter
     ArrayList<Playlist> playlists = new ArrayList<>();
 
     @Getter
     ArrayList<Song> songs = new ArrayList<>();
+
+    @Getter
     ArrayList<Album> albums = new ArrayList<>();
+
+    public static void initializeLibrary() {
+        // Load the library data
+        Library loadedLibrary = DataMethod.loadLibrary();
+
+        // Check if loadedLibrary is not null and update the singleton instance
+        if (loadedLibrary != null) {
+            Library.setInstance(loadedLibrary);
+        } else {
+            // If no saved library exists, create a new instance
+            Library.setInstance(new Library());
+        }
+    }
+
+    public static synchronized Library getInstance() {
+        if (instance == null) {
+            synchronized (Library.class) {
+                if (instance == null) {  // Double-checked locking for thread safety
+                    instance = DataMethod.loadLibrary();
+                    if (instance == null) {
+                        instance = new Library();
+                    }
+                }
+            }
+        }
+        return instance;
+    }
+
+    public static synchronized void setInstance(Library newInstance) {
+        instance = newInstance;
+    }
+
+
+    public Library() {
+        System.out.println("Library instance created: " + this);
+    }
 
     public void addSong(Song song)
     {

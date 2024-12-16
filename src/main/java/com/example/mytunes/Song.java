@@ -6,9 +6,12 @@ import lombok.Setter;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.Serializable;
 
-public class Song
+public class Song implements Serializable
 {
+    private static final long serialVersionUID = 1L;
+
     @Getter @Setter
     private String songTitle;
 
@@ -31,7 +34,9 @@ public class Song
     private byte[] albumCoverByte;
 
     @Getter @Setter
-    private File songFile;
+    private transient File songFile;
+
+    private String songFilePath;
 
     public Song(String title, String artist, String album, String songYear, int duration, byte[] albumCover)
     {
@@ -42,6 +47,9 @@ public class Song
         this.albumTitle = album;
         this.albumCoverByte = albumCover;
         setAlbumCoverBytes(albumCover);
+
+        // Debug log
+        System.out.println("Song instance created: " + this + " with title: " + this.songTitle);
     }
 
     public Image getAlbumCover()
@@ -49,9 +57,11 @@ public class Song
         return new Image(new ByteArrayInputStream(albumCoverByte));
     }
 
-    public void setAlbumCoverBytes(byte[] albumCoverBytes)
-    {
-        albumCover = new Image(new ByteArrayInputStream(albumCoverBytes));
+    public void setAlbumCoverBytes(byte[] albumCoverBytes) {
+        this.albumCoverByte = albumCoverBytes;
+        if (albumCoverBytes != null) {
+            this.albumCover = new Image(new ByteArrayInputStream(albumCoverBytes));
+        }
     }
 
     public String getSongDurationFormatted()
@@ -62,6 +72,22 @@ public class Song
         // Format seconds to always be 2 digits
         return String.format("%d:%02d", minutes, seconds);
     }
+
+    public String getSongFilePath() {
+        return songFile != null ? songFile.getAbsolutePath() : songFilePath;
+    }
+
+    public void setSongFile(File file) {
+        this.songFile = file;
+        this.songFilePath = file.getAbsolutePath();
+    }
+
+    public void restoreSongFile() {
+        if (songFilePath != null) {
+            songFile = new File(songFilePath);
+        }
+    }
+
 
     @Override
     public String toString()
