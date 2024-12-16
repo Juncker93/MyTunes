@@ -171,16 +171,23 @@ public class MyTunesController {
     }
 
 
-    public void updateSongUI(Song song)
-    {
+    public void updateSongUI(Song song) {
         if (song == null) {
             songTitleLabel.setText("No song playing");
             songArtistLabel.setText("");
-            currentTimeLabel.setText("0:00");
+            currentTimeLabel.setText("0:00 / 0:00");
         } else {
             songTitleLabel.setText(song.getSongTitle());
             songArtistLabel.setText(song.getSongArtist());
-            currentTimeLabel.setText("0:00");
+
+            String totalDuration = song.getSongDurationFormatted();
+
+            // Bind current time to label
+            mediaPlayer.getCurrentTimeProperty().addListener((observable, oldValue, newValue) -> {
+                currentTimeLabel.setText(newValue + " / " + totalDuration);
+            });
+
+            currentTimeLabel.setText(mediaPlayer.getCurrentTimeProperty().get() + " / " + totalDuration);
         }
     }
 
