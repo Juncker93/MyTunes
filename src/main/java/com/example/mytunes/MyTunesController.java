@@ -273,10 +273,12 @@ public class MyTunesController {
         logger.info("Library instance in use: " + library);
 
         // Debugging information
-        System.out.println("Library loaded successfully with " + library.getSongs().size() + " songs and " + library.getPlaylists().size() + " playlists.");
+        System.out.println("Library loaded successfully with "
+                + library.getSongs().size() + " songs and "
+                + library.getPlaylists().size() + " playlists.");
 
+        // 1. Automatic import logic for songs from the "Music" folder
         try {
-            // Automatic import logic for songs from the "Music" folder
             File musicDirectory = new File(System.getProperty("user.home") + "/Documents/Music");
 
             if (!musicDirectory.exists() && !musicDirectory.mkdirs()) {
@@ -285,7 +287,6 @@ public class MyTunesController {
             }
 
             if (musicDirectory.isDirectory()) {
-                // Load songs from the directory
                 File[] audioFiles = musicDirectory.listFiles(file ->
                         file.isFile() && file.getName().toLowerCase().endsWith(".mp3")
                 );
@@ -302,13 +303,62 @@ public class MyTunesController {
                             library.findAlbum(newSong.getAlbumTitle()).addSongToAlbum(newSong);
                         }
                     }
-                    logger.info("Automatic import: " + audioFiles.length + " songs were loaded from the 'Music' folder in Documents.");
+                    logger.info("Automatic import: " + audioFiles.length
+                            + " songs were loaded from the 'Music' folder in Documents.");
                 } else {
                     logger.info("No MP3 files found in: " + musicDirectory.getAbsolutePath());
                 }
             }
         } catch (Exception e) {
             logger.severe("Error during automatic import: " + e.getMessage());
+        }
+
+        // 2. Populate UI with Playlists from the Library
+        try {
+            logger.info("Loading playlists into the UI...");
+
+            // Clear any existing UI elements in the sidebar
+            playlistVbox.getChildren().clear();
+
+            // Loop through playlists and add them to the UI
+            for (Playlist playlist : library.getPlaylists()) {
+                addPlaylistToUI(playlist); // Helper method to add playlists
+            }
+
+            // Automatically display the first playlist's songs in the TableView
+            if (!library.getPlaylists().isEmpty()) {
+                Playlist firstPlaylist = library.getPlaylists().get(0);
+                switchToPlaylist(firstPlaylist);
+            }
+
+            logger.info("Playlists successfully loaded into the UI.");
+        } catch (Exception e) {
+            logger.severe("Error while loading playlists into UI: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Helper method to add a playlist to the UI sidebar.
+     */
+    private void addPlaylistToUI(Playlist playlist) {
+        try {
+            // Load the playlist node FXML
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("playlist-item.fxml"));
+            HBox playlistNode = loader.load();
+
+            // Set up the controller for the playlist node
+            PlaylistItemController controller = loader.getController();
+            controller.setMyTunesController(this);
+            controller.setPlaylist(playlist);
+            playlist.setPlayListController(controller);
+
+            // Add the playlist node to the sidebar
+            playlistVbox.getChildren().add(playlistNode);
+
+            // Store the controller reference in the UI node (for interactions)
+            playlistNode.setUserData(controller);
+        } catch (IOException e) {
+            logger.severe("Failed to load playlist into UI: " + e.getMessage());
         }
     }
 
