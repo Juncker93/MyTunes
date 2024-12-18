@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.PropertyValueFactory;
 import lombok.Getter;
 import lombok.Setter;
@@ -183,4 +184,45 @@ public class PlaylistViewController {
             }
         });
     }
+    @FXML
+    private void openSearchDialog() {
+        // Create a TextInputDialog
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Search Songs");
+        dialog.setHeaderText("Search for a Song");
+        dialog.setContentText("Enter the song title, artist, or album:");
+
+        // Show the dialog and capture the user input
+        dialog.showAndWait().ifPresent(keyword -> {
+            // Perform the search if the user enters something
+            searchSongs(keyword);
+        });
+    }
+
+    private void searchSongs(String keyword) {
+        if (playlist != null && keyword != null && !keyword.trim().isEmpty()) {
+            // Filter songs based on title, artist, or album
+            var filteredSongs = playlist.getSongs().stream()
+                    .filter(song -> song.getSongTitle().toLowerCase().contains(keyword.toLowerCase()) ||
+                            song.getSongArtist().toLowerCase().contains(keyword.toLowerCase()) ||
+                            song.getAlbumTitle().toLowerCase().contains(keyword.toLowerCase()))
+                    .toList();
+
+            // Update the TableView with the filtered songs
+            tableviewPlaylist.getItems().clear();
+            tableviewPlaylist.getItems().addAll(filteredSongs);
+            tableviewPlaylist.refresh();
+        } else {
+            // If no keyword is entered, reload the full playlist
+            refreshTableview();
+        }
+    }
+
+    @FXML
+    private void clearSearch() {
+        // Reset the TableView to show all songs in the playlist
+        refreshTableview();
+        System.out.println("Search cleared. Full playlist displayed.");
+    }
+
 }
