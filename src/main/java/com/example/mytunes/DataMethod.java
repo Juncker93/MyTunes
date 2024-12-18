@@ -19,13 +19,13 @@ public class DataMethod {
 
     // Save a Library object to a file
     public static void saveLibrary(Library library) {
-        // Kontrollér, om det er singleton-instansen
+        // Controls whether the library is right one fetched.
         if (library != Library.getInstance()) {
             System.err.println("Warning: Attempting to save a different library instance!");
             return;
         }
 
-        // Kontrollér, om biblioteket er tomt
+        //Controls, whether the library is empty
         if (library.getSongs().isEmpty() && library.getPlaylists().isEmpty()) {
             System.err.println("Library is empty. Saving has been skipped.");
             return;
@@ -38,7 +38,7 @@ public class DataMethod {
             }
             File file = new File(directory, "library.dat");
 
-            // Gem biblioteket i filen
+            // Save "Library" to the file
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
                 oos.writeObject(library);
                 System.out.println("Library saved successfully with "
@@ -62,7 +62,7 @@ public class DataMethod {
                         + library.getSongs().size() + " songs and "
                         + library.getPlaylists().size() + " playlists.");
 
-                // Gendan transient felter som filer og billeder
+                // Restore transient fields such as images
                 for (Song song : library.getSongs()) {
                     song.restoreSongFile();
                 }
@@ -78,7 +78,7 @@ public class DataMethod {
             library = new Library();
         }
 
-        // Opdater singleton-instansen
+        // update the singleton
         Library.setInstance(library);
         return Library.getInstance();
     }
@@ -107,10 +107,10 @@ public class DataMethod {
 
         if (file.exists()) {
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-                // Indlæs spillelisten fra filen
+                // load the playlist from the file
                 playlist = (Playlist) ois.readObject();
 
-                // Gendan transient felter for spillelisten
+                // Restore transient fields
                 for (Song song : playlist.getSongs()) {
                     song.restoreSongFile();
                 }

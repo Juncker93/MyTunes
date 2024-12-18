@@ -53,10 +53,6 @@ public class Library implements Serializable
     }
 
 
-    public Library() {
-        System.out.println("Library instance created: " + this);
-    }
-
     public void addSong(Song song)
     {
         songs.add(song);
