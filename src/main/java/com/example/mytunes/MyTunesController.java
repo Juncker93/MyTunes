@@ -390,6 +390,7 @@ public class MyTunesController {
                 if (response == ButtonType.OK) {
                     // Delete the playlist from the library
                     library.playlists.remove(selectedPlaylist);
+                    mediaPlayer.getMediaPlayer().stop();
 
                     // Remove the playlist from the UI
                     playlistVbox.getChildren().removeIf(node -> {
